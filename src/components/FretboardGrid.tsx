@@ -1,10 +1,14 @@
+import { useRef } from 'react'
 import { DotState, type PatternPositions } from '../models/patterns'
 
 type FretboardGridProps = {
   frets: number
   dots?: PatternPositions
   dotStates?: (DotState | undefined)[][]
-  onCellClick?: (stringIndex: number, fretIndex: number) => void
+  onCellToggle?: (stringIndex: number, fretIndex: number) => void
+  onCellPaintAdd?: (stringIndex: number, fretIndex: number) => void
+  onCellPaintRemove?: (stringIndex: number, fretIndex: number) => void
+  interactive?: boolean
 }
 
 const STRINGS = 6
@@ -13,10 +17,15 @@ export function FretboardGrid({
   frets,
   dots,
   dotStates,
-  onCellClick,
+  onCellToggle,
+  onCellPaintAdd,
+  onCellPaintRemove,
+  interactive = true,
 }: FretboardGridProps) {
   const columns = Array.from({ length: frets }, (_, i) => i + 1)
   const rows = Array.from({ length: STRINGS }, (_, i) => i)
+  const isPaintingRef = useRef(false)
+  const paintModeRef = useRef<'add' | 'remove' | null>(null)
   const getState = (stringIndex: number, fretIndex: number) =>
     dotStates?.[stringIndex]?.[fretIndex - 1]
 
@@ -47,6 +56,18 @@ export function FretboardGrid({
     <div
       data-testid="fretboard-grid"
       className="inline-flex flex-col gap-0 rounded-xl bg-slate-900/90 p-4 shadow-lg"
+      onPointerUp={() => {
+        isPaintingRef.current = false
+        paintModeRef.current = null
+      }}
+      onPointerLeave={() => {
+        isPaintingRef.current = false
+        paintModeRef.current = null
+      }}
+      onPointerCancel={() => {
+        isPaintingRef.current = false
+        paintModeRef.current = null
+      }}
     >
       {rows.map((stringIndex) => (
         <div
@@ -67,7 +88,24 @@ export function FretboardGrid({
                 data-testid="fret-cell"
                 data-string={stringIndex}
                 data-fret={fretIndex}
-                onClick={() => onCellClick?.(stringIndex, fretIndex)}
+                onPointerDown={(event) => {
+                  if (!interactive) return
+                  if (event.button !== 0) return
+                  isPaintingRef.current = true
+                  const currentState = getState(stringIndex, fretIndex)
+                  const isSelected = currentState === DotState.Selected
+                  paintModeRef.current = isSelected ? 'remove' : 'add'
+                  onCellToggle?.(stringIndex, fretIndex)
+                }}
+                onPointerEnter={() => {
+                  if (!interactive) return
+                  if (!isPaintingRef.current) return
+                  if (paintModeRef.current === 'remove') {
+                    onCellPaintRemove?.(stringIndex, fretIndex)
+                  } else {
+                    onCellPaintAdd?.(stringIndex, fretIndex)
+                  }
+                }}
                 className={[
                   'relative h-8 w-24 bg-slate-800/70',
                   'border-l border-slate-600/80',

@@ -15,18 +15,22 @@ function App() {
   const patterns = activeSet.patterns
   const pattern = patterns[patternIndex]
 
-  const goPrev = () =>
-    setPatternIndex((current) =>
-      current === 0 ? patterns.length - 1 : current - 1,
-    )
-  const goNext = () =>
-    setPatternIndex((current) =>
-      current === patterns.length - 1 ? 0 : current + 1,
-    )
-
   const clearSelection = () => {
     setSelected(new Set())
     setSubmitted(false)
+  }
+
+  const goPrev = () => {
+    clearSelection()
+    setPatternIndex((current) =>
+      current === 0 ? patterns.length - 1 : current - 1,
+    )
+  }
+  const goNext = () => {
+    clearSelection()
+    setPatternIndex((current) =>
+      current === patterns.length - 1 ? 0 : current + 1,
+    )
   }
 
   const handleSelect = (stringIndex: number, fretIndex: number) => {
@@ -38,6 +42,26 @@ function App() {
       } else {
         next.add(key)
       }
+      return next
+    })
+  }
+
+  const handlePaintAdd = (stringIndex: number, fretIndex: number) => {
+    const key = `${stringIndex}:${fretIndex}`
+    setSelected((current) => {
+      if (current.has(key)) return current
+      const next = new Set(current)
+      next.add(key)
+      return next
+    })
+  }
+
+  const handlePaintRemove = (stringIndex: number, fretIndex: number) => {
+    const key = `${stringIndex}:${fretIndex}`
+    setSelected((current) => {
+      if (!current.has(key)) return current
+      const next = new Set(current)
+      next.delete(key)
       return next
     })
   }
@@ -62,6 +86,8 @@ function App() {
       selected={selected}
       submitted={submitted}
       onToggleCell={handleSelect}
+      onPaintCellAdd={handlePaintAdd}
+      onPaintCellRemove={handlePaintRemove}
       onReset={clearSelection}
       onSubmit={submitRecall}
       onPrev={goPrev}
