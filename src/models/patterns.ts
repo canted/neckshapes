@@ -12,6 +12,14 @@ export type PatternPositions = [
   FretIndex[]
 ];
 
+export enum DotState {
+  Default = 'default',
+  Selected = 'selected',
+  Correct = 'correct',
+  Incorrect = 'incorrect',
+  Missing = 'missing',
+}
+
 export interface Pattern {
   id: string;
   title: string;

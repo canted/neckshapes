@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import type { PatternPositions } from '../../models/patterns'
+import { DotState, type PatternPositions } from '../../models/patterns'
 import { FretboardGrid } from '../FretboardGrid'
 
 describe('FretboardGrid', () => {
@@ -28,5 +28,31 @@ describe('FretboardGrid', () => {
     const dotCount = dots.reduce((sum, positions) => sum + positions.length, 0)
     const renderedDots = screen.getAllByTestId('fret-dot')
     expect(renderedDots).toHaveLength(dotCount)
+  })
+
+  it('renders dot states when provided', () => {
+    const frets = 4
+    const dotStates = [
+      [DotState.Default, undefined, undefined, DotState.Selected],
+      [undefined, DotState.Correct, undefined, undefined],
+      [undefined, undefined, DotState.Incorrect, undefined],
+      [DotState.Missing, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined],
+    ]
+
+    render(<FretboardGrid frets={frets} dotStates={dotStates} />)
+
+    const dots = screen.getAllByTestId('fret-dot')
+    const states = dots.map((dot) => dot.getAttribute('data-state'))
+    expect(states).toEqual(
+      expect.arrayContaining([
+        DotState.Default,
+        DotState.Selected,
+        DotState.Correct,
+        DotState.Incorrect,
+        DotState.Missing,
+      ]),
+    )
   })
 })
