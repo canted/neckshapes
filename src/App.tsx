@@ -1,11 +1,17 @@
 import { useMemo, useState } from 'react'
-import { FretboardGrid } from './components/FretboardGrid'
 import { patternSets } from './data/patternSets'
+import { RecallScreen } from './screens/RecallScreen'
+import { ViewerScreen } from './screens/ViewerScreen'
 import './App.css'
+
+type Mode = 'viewer' | 'recall'
 
 function App() {
   const activeSet = useMemo(() => patternSets[0], [])
   const [patternIndex, setPatternIndex] = useState(0)
+  const [mode, setMode] = useState<Mode>('viewer')
+  const [selected, setSelected] = useState<Set<string>>(() => new Set())
+  const [submitted, setSubmitted] = useState(false)
   const patterns = activeSet.patterns
   const pattern = patterns[patternIndex]
 
@@ -18,37 +24,53 @@ function App() {
       current === patterns.length - 1 ? 0 : current + 1,
     )
 
-  return (
-    <div className="min-h-screen bg-slate-950 px-6 py-12 text-slate-100">
-      <main className="mx-auto flex w-full max-w-5xl flex-col items-center gap-8">
-        <header className="text-center">
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
-            Viewer Mode
-          </p>
-          <h1 className="mt-3 text-3xl font-semibold">{activeSet.title}</h1>
-          <p className="mt-2 text-lg text-slate-300">{pattern.title}</p>
-        </header>
+  const clearSelection = () => {
+    setSelected(new Set())
+    setSubmitted(false)
+  }
 
-        <FretboardGrid frets={pattern.spanFrets} dots={pattern.positions} />
+  const handleSelect = (stringIndex: number, fretIndex: number) => {
+    const key = `${stringIndex}:${fretIndex}`
+    setSelected((current) => {
+      const next = new Set(current)
+      if (next.has(key)) {
+        next.delete(key)
+      } else {
+        next.add(key)
+      }
+      return next
+    })
+  }
 
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={goPrev}
-            className="rounded-full border border-slate-700 px-6 py-2 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
-          >
-            Prev
-          </button>
-          <button
-            type="button"
-            onClick={goNext}
-            className="rounded-full bg-emerald-400 px-6 py-2 text-sm font-semibold text-slate-900 transition hover:bg-emerald-300"
-          >
-            Next
-          </button>
-        </div>
-      </main>
-    </div>
+  const submitRecall = () => setSubmitted(true)
+
+  return mode === 'viewer' ? (
+    <ViewerScreen
+      patternSet={activeSet}
+      pattern={pattern}
+      onPrev={goPrev}
+      onNext={goNext}
+      onSwitchMode={() => {
+        setMode('recall')
+        clearSelection()
+      }}
+    />
+  ) : (
+    <RecallScreen
+      patternSet={activeSet}
+      pattern={pattern}
+      selected={selected}
+      submitted={submitted}
+      onToggleCell={handleSelect}
+      onReset={clearSelection}
+      onSubmit={submitRecall}
+      onPrev={goPrev}
+      onNext={goNext}
+      onSwitchMode={() => {
+        setMode('viewer')
+        clearSelection()
+      }}
+    />
   )
 }
 

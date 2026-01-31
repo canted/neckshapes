@@ -4,11 +4,17 @@ type FretboardGridProps = {
   frets: number
   dots?: PatternPositions
   dotStates?: (DotState | undefined)[][]
+  onCellClick?: (stringIndex: number, fretIndex: number) => void
 }
 
 const STRINGS = 6
 
-export function FretboardGrid({ frets, dots, dotStates }: FretboardGridProps) {
+export function FretboardGrid({
+  frets,
+  dots,
+  dotStates,
+  onCellClick,
+}: FretboardGridProps) {
   const columns = Array.from({ length: frets }, (_, i) => i + 1)
   const rows = Array.from({ length: STRINGS }, (_, i) => i)
   const getState = (stringIndex: number, fretIndex: number) =>
@@ -55,14 +61,17 @@ export function FretboardGrid({ frets, dots, dotStates }: FretboardGridProps) {
             const showDot =
               dots?.[stringIndex]?.includes(fretIndex) || state !== undefined
             return (
-              <div
+              <button
+                type="button"
                 key={`${stringIndex}-${fretIndex}`}
                 data-testid="fret-cell"
                 data-string={stringIndex}
                 data-fret={fretIndex}
+                onClick={() => onCellClick?.(stringIndex, fretIndex)}
                 className={[
                   'relative h-8 w-24 bg-slate-800/70',
                   'border-l border-slate-600/80',
+                  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300/80',
                   isLast ? 'border-r border-slate-600/80' : '',
                 ].join(' ')}
               >
@@ -87,7 +96,7 @@ export function FretboardGrid({ frets, dots, dotStates }: FretboardGridProps) {
                     ) : null}
                   </>
                 ) : null}
-              </div>
+              </button>
             )
           })}
         </div>
