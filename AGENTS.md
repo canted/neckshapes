@@ -6,10 +6,16 @@ A small mobile-first, client-only web app (PWA) to help guitarists memorize fret
 ## Tech stack
 - TypeScript
 - Vite (PWA-friendly setup)
+- Vitest
 - React
+- Tailwind
 - Client-only (no backend)
 - Hosting target: GitHub Pages
 - Data: in‑memory + optional localStorage for persistence
+
+## Development approach
+test driven development
+ask clarifying questions as needed, multiple choice or open ended
 
 ## Core concepts
 - **Fretboard grid:** 6 strings × N frets (N is configurable; start with 4).
@@ -40,6 +46,9 @@ export interface Pattern {
   title: string; // e.g., "Position 1"
   positions: PatternPositions;
   spanFrets: number; // N, default 4, can vary later
+  // Offset from Position 1, used to align overlapping positions
+  // (e.g., offset 2 means fret 1 here maps to fret 3 in Position 1)
+  offsetFromPosition1: number;
 }
 
 export interface PatternSet {

@@ -17,6 +17,8 @@ export interface Pattern {
   title: string;
   positions: PatternPositions;
   spanFrets: number;
+  // Offset from Position 1, used to align overlapping positions
+  offsetFromPosition1: number;
 }
 
 export interface PatternSet {

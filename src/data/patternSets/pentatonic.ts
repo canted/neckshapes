@@ -8,6 +8,7 @@ export const pentatonic: PatternSet = {
       id: "pentatonic-position-1",
       title: "Position 1",
       spanFrets: 4,
+      offsetFromPosition1: 0,
       positions: [
         [1, 4],
         [1, 4],
@@ -21,6 +22,7 @@ export const pentatonic: PatternSet = {
       id: "pentatonic-position-2",
       title: "Position 2",
       spanFrets: 4,
+      offsetFromPosition1: 2,
       positions: [
         [2, 4],
         [2, 4],
@@ -34,6 +36,7 @@ export const pentatonic: PatternSet = {
       id: "pentatonic-position-3",
       title: "Position 3",
       spanFrets: 5,
+      offsetFromPosition1: 4,
       positions: [
         [2, 4],
         [2, 5],
@@ -47,6 +50,7 @@ export const pentatonic: PatternSet = {
       id: "pentatonic-position-4",
       title: "Position 4",
       spanFrets: 4,
+      offsetFromPosition1: 7,
       positions: [
         [1, 4],
         [2, 4],
@@ -60,6 +64,7 @@ export const pentatonic: PatternSet = {
       id: "pentatonic-position-5",
       title: "Position 5",
       spanFrets: 4,
+      offsetFromPosition1: 9,
       positions: [
         [2, 4],
         [2, 4],
